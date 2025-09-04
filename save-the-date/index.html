@@ -17,7 +17,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      position: relative; /* important for absolute positioning */
+      position: relative; /* for absolute positioning */
     }
     .rsvp-btn {
       position: absolute;
@@ -36,9 +36,25 @@
   </style>
 </head>
 <body>
-  <a href="https://docs.google.com/forms/d/e/1FAIpQLSfa5Rhxvtl5KhtegnMuWdSc4NnmNaiPT9Wayn14TEYum11mSw/viewform" 
-     target="_blank" 
-     rel="noopener" 
-     class="rsvp-btn"></a>
+  <a href="#" class="rsvp-btn" target="_blank" rel="noopener"></a>
+
+  <script>
+    // Map the URL parameter to the correct Google Form
+    const forms = {
+      "1": "https://forms.gle/9LCTVGZLrgvFKCJ46",  // 1 ticket
+      "2": "https://forms.gle/EXAMPLE2",           // 2 tickets
+      "3": "https://forms.gle/EXAMPLE3",           // 3 tickets
+      "4": "https://forms.gle/EXAMPLE4",           // 4 tickets
+      "5": "https://forms.gle/EXAMPLE5"            // 5 tickets
+    };
+
+    // Read the form parameter from the URL
+    const params = new URLSearchParams(window.location.search);
+    const formKey = params.get('form'); // e.g., ?form=1
+    const rsvpLink = forms[formKey] || forms["1"]; // default to "1 ticket"
+
+    // Set the overlay button's href dynamically
+    document.querySelector('.rsvp-btn').href = rsvpLink;
+  </script>
 </body>
 </html>
