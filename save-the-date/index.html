@@ -10,18 +10,21 @@
       padding: 0;
       height: 100%;
       width: 100%;
+      background: #0f172a; /* fallback color */
     }
     body {
       background: #0f172a url('invite.png') no-repeat center center;
-      background-size: contain; /* shows full image */
+      background-size: cover; /* fill viewport completely */
       display: flex;
       justify-content: center;
       align-items: center;
-      position: relative; /* for absolute positioning */
+      position: relative; /* for absolute positioning of overlay */
+      min-height: 100vh;
+      min-width: 100vw;
     }
     .rsvp-btn {
       position: absolute;
-      top: 75%; /* adjust until it’s exactly over your image button */
+      top: 75%; /* adjust until exactly over your image button */
       left: 50%;
       transform: translate(-50%, -50%);
       width: 220px;   /* adjust to match your image button’s width */
@@ -39,7 +42,7 @@
   <a href="#" class="rsvp-btn" target="_blank" rel="noopener"></a>
 
   <script>
-    // Map the URL parameter to the correct Google Form
+    // Map URL parameters to Google Form links
     const forms = {
       "1": "https://forms.gle/9LCTVGZLrgvFKCJ46",  // 1 ticket
       "2": "https://forms.gle/EXAMPLE2",           // 2 tickets
@@ -48,12 +51,12 @@
       "5": "https://forms.gle/EXAMPLE5"            // 5 tickets
     };
 
-    // Read the form parameter from the URL
+    // Get the 'form' parameter from the URL
     const params = new URLSearchParams(window.location.search);
     const formKey = params.get('form'); // e.g., ?form=1
-    const rsvpLink = forms[formKey] || forms["1"]; // default to "1 ticket"
+    const rsvpLink = forms[formKey] || forms["1"]; // default to 1 ticket
 
-    // Set the overlay button's href dynamically
+    // Set the overlay button href dynamically
     document.querySelector('.rsvp-btn').href = rsvpLink;
   </script>
 </body>
