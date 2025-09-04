@@ -10,18 +10,21 @@
       padding: 0;
       height: 100%;
       width: 100%;
+      background: #0f172a; /* fallback color */
     }
     body {
-      background: #0f172a url('invite.png') no-repeat center center;
-      background-size: contain; /* shows full image */
+      background: #0f172a url('imagenew.png') no-repeat center center;
+      background-size: cover; /* ensures the image fills the viewport */
       display: flex;
       justify-content: center;
       align-items: center;
-      position: relative; /* important for absolute positioning */
+      position: relative; /* for absolute positioning of overlay */
+      min-height: 100vh;
+      min-width: 100vw;
     }
     .rsvp-btn {
       position: absolute;
-      top: 75%; /* adjust until it’s exactly over your image button */
+      top: 80%; /* adjust to match your image button */
       left: 50%;
       transform: translate(-50%, -50%);
       width: 220px;   /* adjust to match your image button’s width */
@@ -36,9 +39,25 @@
   </style>
 </head>
 <body>
-  <a href="https://docs.google.com/forms/d/e/1FAIpQLSfa5Rhxvtl5KhtegnMuWdSc4NnmNaiPT9Wayn14TEYum11mSw/viewform" 
-     target="_blank" 
-     rel="noopener" 
-     class="rsvp-btn"></a>
+  <a href="#" class="rsvp-btn" target="_blank" rel="noopener"></a>
+
+  <script>
+    // Map URL parameters to Google Form links
+    const forms = {
+      "1": "https://forms.gle/9LCTVGZLrgvFKCJ46", // 1 ticket
+      "2": "https://forms.gle/fikbYw4Hkea5XfL48", // 2 tickets
+      "3": "https://forms.gle/cFEmv5B6rjxVgN9RA", // 3 tickets
+      "4": "https://forms.gle/XEkfuhwPSvjKicMj7", // 4 tickets
+      "5": "https://forms.gle/DP2PB5dNjyz5Cxgu7"  // 5 tickets
+    };
+
+    // Read the 'form' parameter from the URL
+    const params = new URLSearchParams(window.location.search);
+    const formKey = params.get('form'); // e.g., ?form=1
+    const rsvpLink = forms[formKey] || forms["1"]; // default to 1 ticket
+
+    // Set the overlay button href dynamically
+    document.querySelector('.rsvp-btn').href = rsvpLink;
+  </script>
 </body>
 </html>
