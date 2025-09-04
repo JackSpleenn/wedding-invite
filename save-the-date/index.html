@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Save the Date – RSVP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+    body {
+      background: #0f172a url('invite.png') no-repeat center center;
+      background-size: contain; /* shows full image */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative; /* important for absolute positioning */
+    }
+    .rsvp-btn {
+      position: absolute;
+      top: 75%; /* adjust until it’s exactly over your image button */
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 220px;   /* adjust to match your image button’s width */
+      height: 60px;   /* adjust to match your image button’s height */
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      /* debugging only — uncomment to see the overlay box */
+      /* background: rgba(255, 255, 0, 0.3); */
+    }
+  </style>
+</head>
+<body>
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSfa5Rhxvtl5KhtegnMuWdSc4NnmNaiPT9Wayn14TEYum11mSw/viewform" 
+     target="_blank" 
+     rel="noopener" 
+     class="rsvp-btn"></a>
+</body>
+</html>
