@@ -23,11 +23,17 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       width: 100%;
       max-width: 400px;
+      text-align: center;
     }
 
     h1 {
-      text-align: center;
       font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .greeting {
+      font-size: 16px;
+      color: #333;
       margin-bottom: 20px;
     }
 
@@ -35,9 +41,10 @@
       display: block;
       margin-top: 15px;
       font-weight: bold;
+      text-align: left;
     }
 
-    input, textarea, select, button {
+    input, textarea, button {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
@@ -69,6 +76,7 @@
       margin-top: 15px;
       font-size: 14px;
       color: #333;
+      text-align: left;
     }
 
     .guest-item {
@@ -82,26 +90,14 @@
 <body>
 
 <div class="form-container">
-  <h1>Save the date</h1>
-  
-  <label for="guest-name">Nombre completo</label>
-  <input type="text" id="guest-name" placeholder="Nombre y Apellido">
+  <h1>Confirmación de asistencia</h1>
+  <div class="greeting" id="greeting"></div>
 
   <label for="guest-wa">Número de WhatsApp (10 dígitos)</label>
   <input type="text" id="guest-wa" placeholder="Ej. 5512345678" maxlength="10">
 
-  <label for="guest-minors">Número de menores de 10 años</label>
-  <select id="guest-minors">
-    <option value="0" selected>0</option>
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-  </select>
-
-  <label for="guest-notes">Notas / Comentarios</label>
-  <textarea id="guest-notes" placeholder="¿Eres alérgico a algún alimento, vegetariano o vegano?"></textarea>
+  <label for="guest-name">Nombre del invitado</label>
+  <input type="text" id="guest-name" placeholder="Nombre y Apellido">
 
   <button id="add-guest" class="add-guest-btn">+ Agregar invitado</button>
 
@@ -113,50 +109,62 @@
 <script>
   const guestList = [];
   const guestListDiv = document.getElementById('guest-list');
+  const greetingDiv = document.getElementById('greeting');
+
+  // URL parameters
+  const params = new URLSearchParams(window.location.search);
+  const maxGuests = parseInt(params.get('max')) || 1; // default 1
+  const guestNameParam = params.get('guest'); // e.g., ?guest=juan-perez
+
+  // Display personalized greeting
+  if(guestNameParam) {
+    const formattedName = guestNameParam.replace(/-/g, ' '); // convert hyphens to spaces
+    greetingDiv.textContent = `Hola ${formattedName}, puedes registrar hasta ${maxGuests} invitado(s).`;
+  } else {
+    greetingDiv.textContent = `Puedes registrar hasta ${maxGuests} invitado(s).`;
+  }
 
   document.getElementById('add-guest').addEventListener('click', () => {
     const name = document.getElementById('guest-name').value.trim();
     const wa = document.getElementById('guest-wa').value.trim();
-    const minor = parseInt(document.getElementById('guest-minors').value, 10);
-    const notes = document.getElementById('guest-notes').value.trim();
 
-    // Validate fields
+    // Validate WhatsApp number
     const waRegex = /^\d{10}$/;
-    if(!name || !wa){
+    if (!name || !wa) {
       alert("Por favor, completa el nombre y número de WhatsApp.");
       return;
     }
-    if(!waRegex.test(wa)){
+    if (!waRegex.test(wa)) {
       alert("El número de WhatsApp debe tener exactamente 10 dígitos.");
       return;
     }
 
-    const waFull = "+52" + wa;
+    if (guestList.length >= maxGuests) {
+      alert(`Solo puedes agregar hasta ${maxGuests} invitado(s).`);
+      return;
+    }
 
-    guestList.push({name, wa: waFull, minors: minor, notes});
+    const waFull = "+52" + wa;
+    guestList.push({ name, wa: waFull });
 
     const div = document.createElement('div');
     div.classList.add('guest-item');
-    div.textContent = `✅ ${name} (${waFull})${minor > 0 ? `, ${minor} menor(es) de 10 años` : ''}`;
+    div.textContent = `✅ ${name} (${waFull})`;
     guestListDiv.appendChild(div);
 
-    // Clear fields
     document.getElementById('guest-name').value = '';
     document.getElementById('guest-wa').value = '';
-    document.getElementById('guest-minors').value = '0';
-    document.getElementById('guest-notes').value = '';
 
-    alert(`Gracias ${name}, invitado agregado.`);
+    alert(`Invitado agregado correctamente.`);
   });
 
   document.getElementById('submit-guests').addEventListener('click', () => {
-    if(guestList.length === 0){
+    if (guestList.length === 0) {
       alert("Agrega al menos un invitado antes de enviar.");
       return;
     }
-    // TODO: send guestList to Firebase
     console.log("Enviar a Firebase:", guestList);
-    alert("Gracias nos alegra mucho contar con tu asistencia!");
+    alert("Gracias, nos alegra mucho contar con tu asistencia!");
   });
 </script>
 
