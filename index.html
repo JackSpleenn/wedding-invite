@@ -73,7 +73,7 @@
   <main class="stage">
     <div class="img-wrap" id="imgWrap">
       <img id="bgImg" class="bg-img" src="simpler4.png" alt="Save the Date">
-      <a id="rsvpBtn" class="rsvp-btn" href="#" target="_blank" rel="noopener">Click aquí para confirmar</a>
+      <a id="rsvpBtn" class="rsvp-btn" href="#" target="_blank" rel="noopener"></a>
     </div>
 
     <div class="hint">Si la imagen se ve recortada, prueba rotarla o abrirla en vertical. Ajusta la posición del botón si es necesario.</div>
@@ -106,15 +106,17 @@
 
     // ===== Read guest from URL query parameter =====
     const params = new URLSearchParams(window.location.search);
-    const guest = params.get('guest'); // e.g., ?guest=Victoria-Ezequiel
+    const guest = params.get('guest'); // Example: ?guest=Victoria-Ezequiel
 
-    // ===== Set button href, no automatic redirect =====
+    // ===== Set button href (no automatic redirect) =====
     if (guest && forms[guest]) {
       btn.href = forms[guest];
+      btn.style.cursor = 'pointer';
     } else {
       btn.href = "#";
       btn.style.cursor = "not-allowed";
-      alert("No se reconoce tu invitación. Contacta a los novios.");
+      // Optionally show an alert, but it will only appear if guest not recognized
+      // alert("No se reconoce tu invitación. Contacta a los novios.");
     }
 
     // ===== Function to position the RSVP overlay =====
