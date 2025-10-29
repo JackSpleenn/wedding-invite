@@ -8,15 +8,14 @@
     :root {
       --bg: #f6f6fadd;
     }
-    html,body {
+    html, body {
       height: 100%;
       margin: 0;
       background: var(--bg);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Centering container */
     .stage {
       min-height: 100vh;
       display: grid;
@@ -26,34 +25,30 @@
       background: var(--bg);
     }
 
-    /* Image wrapper — positions overlay relative to this box */
     .img-wrap {
       position: relative;
-      width: min(1000px, 100%);    /* maximum width for large screens */
+      width: min(1000px, 100%);
       max-height: 100vh;
       display: block;
-      background: var(--bg);       /* shows behind letterbox bars */
+      background: var(--bg);
       border-radius: 8px;
       overflow: visible;
     }
 
-    /* The actual image: scale responsively, keep full image visible */
     .bg-img {
       display: block;
       width: 100%;
       height: 100%;
       max-height: 100vh;
-      object-fit: contain;   /* IMPORTANT: show whole image without cropping */
+      object-fit: contain;
       -o-object-fit: contain;
     }
 
-    /* Invisible RSVP overlay positioned absolutely inside .img-wrap */
     .rsvp-btn {
       position: absolute;
-      /* initial values; JS will set 'left' and 'top' in pixels */
       left: 50%;
       top: 90%;
-      transform: translate(-50%,-50%);
+      transform: translate(-50%, -50%);
       width: 220px;
       height: 60px;
       background: transparent;
@@ -61,21 +56,17 @@
       cursor: pointer;
       text-decoration: none;
       z-index: 5;
-      /* debugging: uncomment to see the overlay */
-      /* background: rgba(255,255,0,0.25); border:1px dashed rgba(0,0,0,0.2); */
     }
 
-    /* Helpful small note under image on mobile */
     .hint {
       margin-top: 12px;
       font-size: 13px;
-      color: #cbd5e1;
+      color: #94a3b8;
       text-align: center;
       max-width: 900px;
     }
 
-    /* Make clickable area adapt on very small screens */
-    @media (max-width:420px) {
+    @media (max-width: 420px) {
       .rsvp-btn { width: 160px; height: 52px; }
     }
   </style>
@@ -83,7 +74,6 @@
 <body>
   <main class="stage">
     <div class="img-wrap" id="imgWrap">
-      <!-- Replace simpler4.png with your image filename in the same folder -->
       <img id="bgImg" class="bg-img" src="simpler4.png" alt="Save the Date">
       <a id="rsvpBtn" class="rsvp-btn" href="#" target="_blank" rel="noopener"></a>
     </div>
@@ -92,19 +82,16 @@
   </main>
 
   <script>
-    // ===== CONFIG: tweak these percentages to align the overlay on your image button =====
-    // They represent the target point on the image where the button should be centered,
-    // as percentages of the image's natural displayed area (0..1)
-    // Example: { x: 0.5, y: 0.93 } = horizontally centered, 93% down the image.
+    // ===== CONFIG: adjust overlay button position (percent of image area)
     const BUTTON_POS = { x: 0.5, y: 0.93 };
 
-    // ===== Dynamic form map (keeps your previous behavior) =====
+    // ===== NEW FORM LINKS (hosted on Firebase) =====
     const forms = {
-      "1": "https://forms.gle/9LCTVGZLrgvFKCJ46",
-      "2": "https://forms.gle/fikbYw4Hkea5XfL48",
-      "3": "https://forms.gle/cFEmv5B6rjxVgN9RA",
-      "4": "https://forms.gle/XEkfuhwPSvjKicMj7",
-      "5": "https://forms.gle/DP2PB5dNjyz5Cxgu7"
+      "1": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=1",
+      "2": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=2",
+      "3": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=3",
+      "4": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=4",
+      "5": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=5"
     };
 
     // ===== Helper references =====
@@ -112,79 +99,36 @@
     const wrap = document.getElementById('imgWrap');
     const btn = document.getElementById('rsvpBtn');
 
-    // Read ?form= param (keeps defaults)
+    // Read ?form= param (for personalized links)
     const params = new URLSearchParams(window.location.search);
     const formKey = params.get('form');
     const rsvpLink = forms[formKey] || forms["1"];
     btn.href = rsvpLink;
 
-    // Positioning function: places the center of the overlay at BUTTON_POS within the displayed image rect
+    // ===== Function to position the RSVP overlay =====
     function positionOverlay() {
-      // Get image bounding rect (visible area)
       const imgRect = img.getBoundingClientRect();
       const wrapRect = wrap.getBoundingClientRect();
-
-      // If the image hasn't loaded or size is zero, skip
       if (imgRect.width === 0 || imgRect.height === 0) return;
 
-      // Compute target pixel coordinates relative to the wrapper
-      // We use x/y percentages of the image bounding box, not the wrapper (safe if wrapper equals image size)
       const targetX = imgRect.left + imgRect.width * BUTTON_POS.x;
       const targetY = imgRect.top + imgRect.height * BUTTON_POS.y;
 
-      // Convert to wrapper-local coordinates
       const localX = targetX - wrapRect.left;
       const localY = targetY - wrapRect.top;
 
-      // Set button center to that point
-      // We want the button centered on that point, so subtract half width/height
       const btnWidth = btn.offsetWidth || parseFloat(getComputedStyle(btn).width) || 200;
       const btnHeight = btn.offsetHeight || parseFloat(getComputedStyle(btn).height) || 60;
 
-      // Calculate left/top in pixels and apply (taking translate(-50%,-50%) into account)
-      // Because of transform: translate(-50%,-50%), we set left/localX and top/localY as percentages/pixels
       btn.style.left = localX + 'px';
       btn.style.top = localY + 'px';
     }
 
-    // Reposition after image loads and on window resize / orientation change
-    img.addEventListener('load', () => {
-      // small timeout to ensure layout settled
-      setTimeout(positionOverlay, 60);
-    });
+    img.addEventListener('load', () => setTimeout(positionOverlay, 60));
+    window.addEventListener('resize', () => requestAnimationFrame(positionOverlay));
+    window.addEventListener('orientationchange', () => setTimeout(positionOverlay, 120));
 
-    window.addEventListener('resize', () => {
-      // recalc after layout changes
-      requestAnimationFrame(positionOverlay);
-    });
-
-    window.addEventListener('orientationchange', () => {
-      // mobile rotate
-      setTimeout(positionOverlay, 120);
-    });
-
-    // initial attempt (in case cached)
     positionOverlay();
-
-    // If you want a quick debugging helper: show the image rect in console
-    // console.log(img.getBoundingClientRect());
-
-    // ===== Optional: allow adjusting percentages via keyboard for quick tuning (press u/d/l/r to nudge) =====
-    (function addTuner(){
-      let step = 0.005;
-      window.addEventListener('keydown', (e) => {
-        // hold Shift to increase step
-        if (e.shiftKey) step = 0.02; else step = 0.005;
-        if (e.key === 'ArrowUp') { BUTTON_POS.y = Math.max(0, BUTTON_POS.y - step); positionOverlay(); }
-        if (e.key === 'ArrowDown') { BUTTON_POS.y = Math.min(1, BUTTON_POS.y + step); positionOverlay(); }
-        if (e.key === 'ArrowLeft') { BUTTON_POS.x = Math.max(0, BUTTON_POS.x - step); positionOverlay(); }
-        if (e.key === 'ArrowRight') { BUTTON_POS.x = Math.min(1, BUTTON_POS.x + step); positionOverlay(); }
-        // Press "S" to log current settings
-        if (e.key.toLowerCase() === 's') console.log('BUTTON_POS', BUTTON_POS);
-      });
-    })();
-
-    // Final safety: reposition after a short time if page loaded before image metrics settled
     setTimeout(positionOverlay, 400);
     setTimeout(positionOverlay, 1200);
   </script>
