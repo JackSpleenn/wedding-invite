@@ -5,9 +5,7 @@
   <title>Save the Date – RSVP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root {
-      --bg: #f6f6fadd;
-    }
+    :root { --bg: #f6f6fadd; }
     html, body {
       height: 100%;
       margin: 0;
@@ -85,13 +83,20 @@
     // ===== CONFIG: adjust overlay button position (percent of image area)
     const BUTTON_POS = { x: 0.5, y: 0.93 };
 
-    // ===== NEW FORM LINKS (hosted on Firebase) =====
+    // ===== Personalized RSVP links =====
     const forms = {
-      "1": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=1",
-      "2": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=2",
-      "3": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=3",
-      "4": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=4",
-      "5": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=5"
+      "Victoria-Ezequiel": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Victoria-Ezequiel&max=1",
+      "Fernando-Salinas": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Fernando-Salinas&max=4",
+      "Arturo-Salinas": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Arturo-Salinas&max=2",
+      "Miguel-Caballero": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Miguel-Caballero&max=2",
+      "Thelma": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Thelma&max=1",
+      "Ray": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Ray&max=2",
+      "Areli-Castañeda": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Areli-Castañeda&max=2",
+      "Meri": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Meri&max=2",
+      "Gerson": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Gerson&max=2",
+      "Abdie": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Abdie&max=1",
+      "Robert": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Robert&max=1"
+      // Add remaining 9 guests here following the same pattern
     };
 
     // ===== Helper references =====
@@ -99,11 +104,18 @@
     const wrap = document.getElementById('imgWrap');
     const btn = document.getElementById('rsvpBtn');
 
-    // Read ?form= param (for personalized links)
+    // ===== Read guest from URL query parameter =====
     const params = new URLSearchParams(window.location.search);
-    const formKey = params.get('form');
-    const rsvpLink = forms[formKey] || forms["1"];
-    btn.href = rsvpLink;
+    const guest = params.get('guest'); // Example: ?guest=Victoria-Ezequiel
+
+    // ===== Redirect automatically if guest exists =====
+    if (guest && forms[guest]) {
+      btn.href = forms[guest];
+      window.location.href = forms[guest]; // automatic redirect
+    } else {
+      btn.href = "#";
+      alert("No se reconoce tu invitación. Contacta a los novios.");
+    }
 
     // ===== Function to position the RSVP overlay =====
     function positionOverlay() {
