@@ -73,7 +73,7 @@
   <main class="stage">
     <div class="img-wrap" id="imgWrap">
       <img id="bgImg" class="bg-img" src="simpler4.png" alt="Save the Date">
-      <a id="rsvpBtn" class="rsvp-btn" href="#" target="_blank" rel="noopener"></a>
+      <a id="rsvpBtn" class="rsvp-btn" href="#" target="_blank" rel="noopener">Click aquí para confirmar</a>
     </div>
 
     <div class="hint">Si la imagen se ve recortada, prueba rotarla o abrirla en vertical. Ajusta la posición del botón si es necesario.</div>
@@ -96,7 +96,7 @@
       "Gerson": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Gerson&max=2",
       "Abdie": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Abdie&max=1",
       "Robert": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Robert&max=1"
-      // Add remaining 9 guests here following the same pattern
+      // Add remaining 9 guests here
     };
 
     // ===== Helper references =====
@@ -106,14 +106,14 @@
 
     // ===== Read guest from URL query parameter =====
     const params = new URLSearchParams(window.location.search);
-    const guest = params.get('guest'); // Example: ?guest=Victoria-Ezequiel
+    const guest = params.get('guest'); // e.g., ?guest=Victoria-Ezequiel
 
-    // ===== Redirect automatically if guest exists =====
+    // ===== Set button href, no automatic redirect =====
     if (guest && forms[guest]) {
       btn.href = forms[guest];
-      window.location.href = forms[guest]; // automatic redirect
     } else {
       btn.href = "#";
+      btn.style.cursor = "not-allowed";
       alert("No se reconoce tu invitación. Contacta a los novios.");
     }
 
@@ -128,9 +128,6 @@
 
       const localX = targetX - wrapRect.left;
       const localY = targetY - wrapRect.top;
-
-      const btnWidth = btn.offsetWidth || parseFloat(getComputedStyle(btn).width) || 200;
-      const btnHeight = btn.offsetHeight || parseFloat(getComputedStyle(btn).height) || 60;
 
       btn.style.left = localX + 'px';
       btn.style.top = localY + 'px';
