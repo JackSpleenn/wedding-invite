@@ -70,10 +70,8 @@
   </main>
 
   <script>
-    // ===== CONFIG: adjust overlay button position (percent of image area)
     const BUTTON_POS = { x: 0.5, y: 0.93 };
 
-    // ===== Personalized RSVP links =====
     const forms = {
       "Victoria-Ezequiel": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Victoria-Ezequiel&max=1",
       "Fernando-Salinas": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Fernando-Salinas&max=4",
@@ -110,20 +108,17 @@
       "Sonia-Contreras": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Sonia-Contreras&max=2",
       "Diana-Mañueco": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Diana-Mañueco&max=2",
       "Lesly-Lomelí": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Lesly-Lomelí&max=2",
-      "Lany-Muñoz": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Lany-Muñoz&max=2",
+      "Lany-Munoz": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Lany-Munoz&max=2",
       "Cesar-Caballero": "https://weddinginvite-ed50f.web.app/rsvp-new.html?guest=Cesar-Caballero&max=2"
     };
 
-    // ===== Helper references =====
     const img = document.getElementById('bgImg');
     const wrap = document.getElementById('imgWrap');
     const btn = document.getElementById('rsvpBtn');
 
-    // ===== Read guest from URL query parameter =====
     const params = new URLSearchParams(window.location.search);
     const guest = params.get('guest');
 
-    // ===== Set button href (no automatic redirect) =====
     if (guest && forms[guest]) {
       btn.href = forms[guest];
       btn.style.cursor = 'pointer';
@@ -132,7 +127,6 @@
       btn.style.cursor = "not-allowed";
     }
 
-    // ===== Function to position the RSVP overlay =====
     function positionOverlay() {
       const imgRect = img.getBoundingClientRect();
       const wrapRect = wrap.getBoundingClientRect();
