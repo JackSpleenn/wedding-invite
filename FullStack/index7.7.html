@@ -70,7 +70,6 @@
       border-radius: 10px;
       border: 1px solid #ccc;
       font-size: 18px;
-      line-height: 1.4;
       transition: all 0.2s ease-in-out;
     }
 
@@ -133,7 +132,7 @@
     @media (max-width: 480px) {
       h1 { font-size: 32px; }
       .greeting { font-size: 20px; }
-      input, button { font-size: 18px; padding: 12px; }
+      input, button { font-size: 18px; padding: 12px; } 
       label { font-size: 16px; }
       .form-container { padding: 20px 16px; border-radius: 18px; }
     }
@@ -145,12 +144,11 @@
   <h1>Confirmación de asistencia</h1>
   <div class="greeting" id="greeting"></div>
 
-  <label for="main-wa">Número principal de WhatsApp (10 dígitos)</label>
-  <input type="text" id="main-wa" placeholder="Ej. 5512345678" maxlength="10">
+  <label for="main-wa">Número de WhatsApp del contacto principal (10 dígitos)</label>
+  <input type="text" id="main-wa" placeholder="Ej. 5512345678" maxlength="10" required>
 
   <label for="guest-name">Nombre del invitado</label>
   <input type="text" id="guest-name" placeholder="Nombre y Apellido">
-
   <button id="add-guest" class="add-guest-btn">+ Agregar invitado</button>
 
   <div class="guest-list" id="guest-list"></div>
@@ -161,9 +159,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { 
-    getFirestore, collection, setDoc, doc, serverTimestamp, getDocs, query, where 
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCdvVimQRKLyDwAII-RxI1rbFAjJRX6Zec",
@@ -181,29 +177,11 @@
   const guestListDiv = document.getElementById('guest-list');
   const greetingDiv = document.getElementById('greeting');
   const successMsg = document.getElementById('success-message');
-  const formContainer = document.querySelector('.form-container');
 
   const params = new URLSearchParams(window.location.search);
   const maxGuests = parseInt(params.get('max')) || 1;
   const guestNameParam = params.get('guest');
   const formKey = params.get('form') || "1";
-
-  // ====== Pre-check if already confirmed ======
-  async function checkIfAlreadyConfirmed() {
-    if (!guestNameParam) return;
-    const q = query(collection(db, "rsvps"), where("mainGuest", "==", guestNameParam.replace(/-/g, ' ')));
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-      formContainer.innerHTML = `
-        <h1>💍 Confirmación registrada</h1>
-        <p style="font-size:20px;">Hola ${guestNameParam.replace(/-/g, ' ')}, ya recibimos tu confirmación.</p>
-        <p style="color:#555;">¡Gracias por confirmar! Nos emociona contar contigo en este día especial 💕</p>
-      `;
-      return true;
-    }
-    return false;
-  }
 
   if (guestNameParam) {
     const formattedName = guestNameParam.replace(/-/g, ' ');
@@ -214,12 +192,10 @@
 
   document.getElementById('add-guest').addEventListener('click', () => {
     const name = document.getElementById('guest-name').value.trim();
-
     if (!name) {
-      alert("Por favor, completa el nombre del invitado.");
+      alert("Por favor, ingresa el nombre del invitado.");
       return;
     }
-
     if (guestList.length >= maxGuests) {
       alert(`Solo puedes agregar hasta ${maxGuests} invitado(s).`);
       return;
@@ -236,15 +212,11 @@
   });
 
   document.getElementById('submit-guests').addEventListener('click', async () => {
-    const mainWa = document.getElementById('main-wa').value.trim();
+    const mainWA = document.getElementById('main-wa').value.trim();
     const waRegex = /^\d{10}$/;
 
-    if (!mainWa) {
-      alert("Por favor, proporciona tu número principal de WhatsApp.");
-      return;
-    }
-    if (!waRegex.test(mainWa)) {
-      alert("El número de WhatsApp debe tener exactamente 10 dígitos.");
+    if (!waRegex.test(mainWA)) {
+      alert("Por favor, ingresa un número de WhatsApp válido (10 dígitos).");
       return;
     }
 
@@ -254,20 +226,16 @@
     }
 
     try {
-      const already = await checkIfAlreadyConfirmed();
-      if (already) return;
-
-      const waFull = "+52" + mainWa;
-      await setDoc(doc(db, "rsvps", guestNameParam), {
+      const docRef = await addDoc(collection(db, "rsvps"), {
         formKey,
         mainGuest: guestNameParam ? guestNameParam.replace(/-/g, ' ') : "Sin nombre",
-        mainContactWa: waFull,
+        mainWA: "+52" + mainWA,
         maxGuests,
         guests: guestList,
         timestamp: serverTimestamp()
       });
 
-      console.log("RSVP guardado exitosamente");
+      console.log("RSVP guardado con ID:", docRef.id);
       successMsg.textContent = "🎉 ¡Gracias! Nos alegra mucho contar con tu asistencia 💕";
       guestListDiv.innerHTML = "";
     } catch (error) {
@@ -275,8 +243,6 @@
       alert("Ocurrió un error al enviar tu confirmación. Intenta nuevamente.");
     }
   });
-
-  checkIfAlreadyConfirmed();
 </script>
 
 </body>
